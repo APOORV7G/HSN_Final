@@ -58,7 +58,7 @@ public class MainFrame {
 		frame.setBackground(new Color(0, 0, 0));
 		frame.getContentPane().setBackground(new Color(0, 0, 0));
 		frame.getContentPane().setForeground(new Color(255, 255, 255));
-		frame.setBounds(100, 100, 560, 450);
+		frame.setBounds(100, 100, 560, 460);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
@@ -120,7 +120,7 @@ public class MainFrame {
 						}
 						else
 						{
-						
+								
 			                try {
 			                    @SuppressWarnings("resource")
 								XSSFWorkbook workbook = new XSSFWorkbook();
@@ -129,10 +129,12 @@ public class MainFrame {
 			                    FileOutputStream fileOutputStream = new FileOutputStream(maintext.getText() + ".xlsx");
 			                    workbook.write(fileOutputStream);
 			                    fileOutputStream.close();
-			                    System.out.println("Workbook saved to file: " + maintext + ".xlsx");
+			                    // System.out.println("Workbook saved to file: " + maintext + ".xlsx");
 			                    maintext.setEditable(false);
 			                    mainbutton.setEnabled(false);
-			                    btnNewButton.setEnabled(false);
+			                    btnNewButton.setEnabled(false);	
+			                    new Frame2();
+			                    frame.dispose();
 			                    try {
 			                        writer = new BufferedWriter(new FileWriter("temporary.txt"));
 			                        writer.write(maintext.getText() + ".xlsx");
