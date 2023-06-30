@@ -5,8 +5,6 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -19,10 +17,8 @@ import java.io.IOException;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Insets;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
 import javax.swing.border.LineBorder;
 
 public class MainFrame {
@@ -91,6 +87,7 @@ public class MainFrame {
 		frame.getContentPane().add(mainlabel2);
 		
 		JTextField maintext = new JTextField();
+		maintext.setHorizontalAlignment(SwingConstants.CENTER);
 		maintext.setForeground(new Color(255, 255, 255));
 		maintext.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		maintext.setBackground(new Color(0, 0, 0));
@@ -110,6 +107,7 @@ public class MainFrame {
 		mainbutton.setBorder(new LineBorder(new Color(255, 255, 255), 1, true));
 		JButton btnNewButton = new JButton("Reset");
 		mainbutton.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
 				if(e.getSource()==mainbutton) 
 				{
@@ -124,8 +122,10 @@ public class MainFrame {
 						{
 						
 			                try {
-			                    XSSFWorkbook workbook = new XSSFWorkbook();
-			                    Sheet sheet = workbook.createSheet("Data");
+			                    @SuppressWarnings("resource")
+								XSSFWorkbook workbook = new XSSFWorkbook();
+			                    @SuppressWarnings("unused")
+								Sheet sheet = workbook.createSheet("Data");
 			                    FileOutputStream fileOutputStream = new FileOutputStream(maintext.getText() + ".xlsx");
 			                    workbook.write(fileOutputStream);
 			                    fileOutputStream.close();
