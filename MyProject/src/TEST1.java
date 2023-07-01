@@ -1,33 +1,22 @@
 
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.border.Border;
-
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class HSN2 
+public class TEST1 
 {
 
 	public static void main(String args[]) throws IOException 
 	{
 		
-		JFrame mainframe=new JFrame("HSN");
+		/*JFrame mainframe=new JFrame("HSN");
 		JLabel mainlabelheading=new JLabel();
 		JLabel mainlabelheading2=new JLabel();			//	width=1360
 		JLabel mainlabelheadingempty=new JLabel();		//	height=728
@@ -146,7 +135,29 @@ public class HSN2
 		
 		mainlabelheading2.add(maintext);
 				}
-	}
+	
+	*/
+		@SuppressWarnings("resource")
+		Workbook wb = new XSSFWorkbook();
+		Sheet sheet1 = wb.createSheet("new sheet");
+		
+		Row row = sheet1.createRow(0);
+		for(int i = 0;i<12;i++)
+		{
+		
+		Cell cell=row.createCell(i);
+		cell.setCellValue("hello"+i);
+		
+		}
+		try (OutputStream fileOut = new FileOutputStream("workbook.xlsx")) 
+		{
+		    wb.write(fileOut);
+		}
+		catch(IOException e)
+		{
+			System.out.println(e.getMessage());
+		}
+		}
 
 	
 
