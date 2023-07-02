@@ -9,6 +9,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import javax.swing.border.LineBorder;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -25,8 +27,8 @@ import java.awt.event.ActionEvent;
 public class Frame2 extends JFrame {
 
 	private JFrame frame;
-	private JTextField textField;
-	private JTextField textField_1;
+	private JTextField textField_To;
+	private JTextField textField_From;
 	private JTextArea txtrFrom;
 	private JTextArea txtrTo;
 
@@ -79,20 +81,20 @@ public class Frame2 extends JFrame {
 		txtrEnterTheCell.setEditable(false);
 		panel.add(txtrEnterTheCell);
 		
-		textField = new JTextField();
-		textField.setBorder(new LineBorder(new Color(0, 0, 0)));
-		textField.setHorizontalAlignment(SwingConstants.CENTER);
-		textField.setBounds(239, 128, 86, 20);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
+		textField_To = new JTextField();
+		textField_To.setBorder(new LineBorder(new Color(0, 0, 0)));
+		textField_To.setHorizontalAlignment(SwingConstants.CENTER);
+		textField_To.setBounds(239, 128, 86, 20);
+		frame.getContentPane().add(textField_To);
+		textField_To.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-		textField_1.setSelectionColor(new Color(0, 0, 0));
-		textField_1.setHorizontalAlignment(SwingConstants.CENTER);
-		textField_1.setBounds(239, 85, 86, 20);
-		frame.getContentPane().add(textField_1);
-		textField_1.setColumns(10);
+		textField_From = new JTextField();
+		textField_From.setBorder(new LineBorder(new Color(0, 0, 0)));
+		textField_From.setSelectionColor(new Color(0, 0, 0));
+		textField_From.setHorizontalAlignment(SwingConstants.CENTER);
+		textField_From.setBounds(239, 85, 86, 20);
+		frame.getContentPane().add(textField_From);
+		textField_From.setColumns(10);
 		
 		txtrFrom = new JTextArea();
 		txtrFrom.setText("FROM:");
@@ -114,7 +116,7 @@ public class Frame2 extends JFrame {
 				if(e.getSource()==submit) 
 				{
 					
-						if(textField.getText().trim().isEmpty() || textField_1.getText().trim().isEmpty() ||textField.getText().contentEquals(textField_1.getText())
+						if(textField_To.getText().trim().isEmpty() || textField_From.getText().trim().isEmpty() ||textField_To.getText().contentEquals(textField_From.getText())
 								)
 						{  
 							System.out.println("Invalid name");
@@ -141,7 +143,7 @@ public class Frame2 extends JFrame {
 					                       
 										
 					                          /* 
-					                           * Change this with the curretn values
+					                           * Change this with the current values
 					                           * 
 					                           * Row row = sheet.createRow(1);
 					                           String rowValues="A,B,C,D,E";
@@ -155,6 +157,16 @@ public class Frame2 extends JFrame {
 					                               
 					                           
 					                           }*/
+					                       		
+					                       		
+					                       		
+					                       		for(int i=4; i<=4+Integer.parseInt(textField_To.getText())-Integer.parseInt(textField_From.getText());i++)
+					                       		{
+					                       			Row row = sheet.createRow(i);
+					                       			Cell cell=row.createCell(0);
+					                       			cell.setCellValue(Double.parseDouble(textField_From.getText())+i-4.0);
+					                       		}
+					                       		
 					                           FileOutputStream outputStream = new FileOutputStream(line);
 					                           workbook.write(outputStream);
 					                           outputStream.close();
@@ -189,8 +201,8 @@ public class Frame2 extends JFrame {
 		reset.setBackground(new Color(255, 255, 255));
 		reset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textField.setText(null);
-				textField_1.setText(null);
+				textField_To.setText(null);
+				textField_From.setText(null);
 			}
 		});
 		reset.setBorder(new LineBorder(new Color(0, 0, 0)));
