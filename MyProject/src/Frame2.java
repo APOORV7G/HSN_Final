@@ -132,7 +132,7 @@ public class Frame2 extends JFrame {
 					            
 					            line = reader.readLine();
 					            reader.close();
-					                System.out.println(line);
+					                
 					                {
 					                try (FileInputStream inputStream = new FileInputStream(line);
 					                        Workbook workbook = new XSSFWorkbook(inputStream)) 
@@ -170,6 +170,9 @@ public class Frame2 extends JFrame {
 					                           FileOutputStream outputStream = new FileOutputStream(line);
 					                           workbook.write(outputStream);
 					                           outputStream.close();
+					                           System.out.println("Values Successfully Written in "+line+".xlsx");
+					                           new Frame3();
+					                           frame.dispose();
 					                }catch (IOException e2) 
 					                {
 					                    e2.printStackTrace();
