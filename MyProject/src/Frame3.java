@@ -8,9 +8,24 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Frame3 {
 
@@ -38,8 +53,13 @@ public class Frame3 {
 	private JTextField textField_9;
 	private JTextField invoice_1;
 	private JButton submit;
-	private JButton reset;
 	private String temp,temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9;
+	private JTextField txtTotal;
+	private JTextField textField_10;
+	private Sheet sheet;
+	private int rowIndex;
+	 private Workbook workbook;
+	
 
 	
 
@@ -64,7 +84,47 @@ public class Frame3 {
 	 */
 	public Frame3() {
 		initialize();
+		try 
+		{
+            BufferedReader reader = new BufferedReader(new FileReader("temporary.txt"));
+            String line;
+            
+            line = reader.readLine();
+            reader.close();
+                
+                {
+                	try (FileInputStream fis = new FileInputStream(line)) 
+                	{
+                        workbook = WorkbookFactory.create(fis);
+                	
+                		sheet = workbook.getSheetAt(0);
+                		rowIndex = 4;
+                		Row firstRow = sheet.getRow(4);
+                        if (firstRow != null) {
+                            Cell firstCell = firstRow.getCell(0);
+                            if (firstCell != null && firstCell.getCellType() == CellType.NUMERIC) {
+                                int intValue = (int) firstCell.getNumericCellValue();
+                                String stringValue = String.valueOf(intValue);
+                                invoice_1.setText(stringValue);
+                            }
+                        }
+                         
+                		
+                	
+                	}
+                	catch (IOException e2) 
+	                {
+	                    e2.printStackTrace();
+	                }
+	                
+                }
+		}
+		catch (IOException e1) 
+		{
+            System.out.println("An error occurred while reading the file: " + e1.getMessage());
+        }
 	}
+	
 
 	/**
 	 * Initialize the contents of the frame.
@@ -228,6 +288,7 @@ public class Frame3 {
 				 {
 					 temp2=textField_2.getText();
 					 System.out.println(temp2);
+					 
 					 textField_3.setFocusable(true);
 					 textField_3.requestFocusInWindow();
 				 }
@@ -368,8 +429,8 @@ public class Frame3 {
 				 {
 					 temp9=textField_9.getText();
 					 System.out.println(temp9);
-					 submit.setFocusable(true);
-					 submit.requestFocusInWindow();
+					 textField_10.setFocusable(true);
+					 textField_10.requestFocusInWindow();
 				 }
 			}
 		});
@@ -386,19 +447,226 @@ public class Frame3 {
 		panel.add(invoice_1);
 		invoice_1.setColumns(10);
 		
+		
+		
 		submit=new JButton("Submit");
+		submit.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				readNextValue();
+				writeValue();
+				
+				textField.setFocusable(true);
+				textField.requestFocusInWindow();
+			}
+			private void writeValue() {
+				// TODO Auto-generated method stub
+				Row row = sheet.createRow(--rowIndex);
+				row.createCell(0).setCellValue(Integer.parseInt(invoice_1.getText()));
+		        row.createCell(1).setCellValue(Integer.parseInt(textField.getText()));
+		        row.createCell(2).setCellValue(Integer.parseInt(textField_1.getText()));
+		        row.createCell(3).setCellValue(Integer.parseInt(textField_2.getText()));
+		        row.createCell(4).setCellValue(Integer.parseInt(textField_3.getText()));
+		        row.createCell(5).setCellValue(Integer.parseInt(textField_4.getText()));
+		        row.createCell(6).setCellValue(Integer.parseInt(textField_5.getText()));
+		        row.createCell(7).setCellValue(Integer.parseInt(textField_6.getText()));
+		        row.createCell(8).setCellValue(Integer.parseInt(textField_7.getText()));
+		        row.createCell(9).setCellValue(Integer.parseInt(textField_8.getText()));
+		        row.createCell(10).setCellValue(Integer.parseInt(textField_9.getText()));
+		        rowIndex++;
+
+		        
+		        try 
+				{
+		            BufferedReader reader = new BufferedReader(new FileReader("temporary.txt"));
+		            String line;
+		            
+		            line = reader.readLine();
+		            reader.close();
+		                
+		                {
+		                	
+		                		
+		                		try (FileOutputStream fos = new FileOutputStream(line)) 
+		                		{
+		                            workbook.write(fos);
+		                            fos.close();
+		                            System.out.println("File writeen");
+		                        } catch (IOException e) 
+		                		{
+		                            e.printStackTrace();
+		                        }
+		                   
+			                
+		                }
+				}
+				catch (IOException e1) 
+				{
+		            System.out.println("An error occurred while reading the file: " + e1.getMessage());
+		        }
+		        clearAllTextFields();
+			}
+				
+			
+			private void clearAllTextFields() {
+				// TODO Auto-generated method stub
+				textField.setText("");
+		        textField_1.setText("");
+		        textField_2.setText("");
+		        textField_3.setText("");
+		        textField_4.setText("");
+		        textField_5.setText("");
+		        textField_6.setText("");
+		        textField_7.setText("");
+		        textField_8.setText("");
+		        textField_9.setText("");
+				
+			}
+			private void readNextValue() {
+				
+				if (rowIndex < sheet.getLastRowNum() + 1) {
+		            Row row = sheet.getRow(rowIndex);
+		            Cell cell = row.getCell(0);
+
+		            if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+		            	int intValue = (int) cell.getNumericCellValue();
+		                String stringValue = String.valueOf(intValue);
+		                invoice_1.setText(stringValue);
+		                
+		            } else {
+		                invoice_1.setText("");
+		            }
+
+		            rowIndex++;
+		        } else {
+		            invoice_1.setText("No more values");
+		        }
+				
+			}
+		});
+		
+		submit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				readNextValue();
+				writeValue();
+				
+				textField.setFocusable(true);
+				textField.requestFocusInWindow();
+			}
+
+			private void writeValue() {
+				// TODO Auto-generated method stub
+				Row row = sheet.createRow(--rowIndex);
+				row.createCell(0).setCellValue(Integer.parseInt(invoice_1.getText()));
+				row.createCell(1).setCellValue(Integer.parseInt(textField.getText()));
+		        row.createCell(2).setCellValue(Integer.parseInt(textField_1.getText()));
+		        row.createCell(3).setCellValue(Integer.parseInt(textField_2.getText()));
+		        row.createCell(4).setCellValue(Integer.parseInt(textField_3.getText()));
+		        row.createCell(5).setCellValue(Integer.parseInt(textField_4.getText()));
+		        row.createCell(6).setCellValue(Integer.parseInt(textField_5.getText()));
+		        row.createCell(7).setCellValue(Integer.parseInt(textField_6.getText()));
+		        row.createCell(8).setCellValue(Integer.parseInt(textField_7.getText()));
+		        row.createCell(9).setCellValue(Integer.parseInt(textField_8.getText()));
+		        row.createCell(10).setCellValue(Integer.parseInt(textField_9.getText()));
+		        rowIndex++;
+
+		        
+		        try 
+				{
+		            BufferedReader reader = new BufferedReader(new FileReader("temporary.txt"));
+		            String line;
+		            
+		            line = reader.readLine();
+		            reader.close();
+		                
+		                {
+		                	
+		                		
+		                		try (FileOutputStream fos = new FileOutputStream(line)) 
+		                		{
+		                            workbook.write(fos);
+		                            fos.close();
+		                            System.out.println("File writeen");
+		                        } catch (IOException e) 
+		                		{
+		                            e.printStackTrace();
+		                        }
+		                    
+		                   
+		                }
+				}
+				catch (IOException e1) 
+				{
+		            System.out.println("An error occurred while reading the file: " + e1.getMessage());
+		        }
+		        clearAllTextFields();
+			}
+
+			private void clearAllTextFields()
+	{
+        textField.setText("");
+        textField_1.setText("");
+        textField_2.setText("");
+        textField_3.setText("");
+        textField_4.setText("");
+        textField_5.setText("");
+        textField_6.setText("");
+        textField_7.setText("");
+        textField_8.setText("");
+        textField_9.setText("");
+    }
+
+			private void readNextValue() {
+				
+				if (rowIndex < sheet.getLastRowNum() + 1) {
+		            Row row = sheet.getRow(rowIndex);
+		            Cell cell = row.getCell(0);
+
+		            if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+		            	int intValue = (int) cell.getNumericCellValue();
+		                String stringValue = String.valueOf(intValue);
+		                invoice_1.setText(stringValue);
+		                
+		            } else {
+		                invoice_1.setText("");
+		            }
+
+		            rowIndex++;
+		        } else {
+		            invoice_1.setText("No more values");
+		        }
+				
+			}
+		});
 		submit.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		submit.setForeground(new Color(0, 0, 0));
 		submit.setBackground(new Color(255, 255, 255));
 		submit.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		submit.setBounds(382, 367, 61, 23);
+		submit.setBounds(294, 199, 61, 23);
 		panel.add(submit);
-		reset = new JButton("Reset");
-		reset.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		reset.setForeground(new Color(0, 0, 0));
-		reset.setBackground(new Color(255, 255, 255));
-		reset.setBorder(new LineBorder(new Color(0, 0, 0), 1, true));
-		reset.setBounds(453, 367, 61, 23);
-		panel.add(reset);
+		
+		txtTotal = new JTextField();
+		txtTotal.setText("TOTAL");
+		txtTotal.setEditable(false);
+		txtTotal.setColumns(10);
+		txtTotal.setBounds(294, 152, 77, 20);
+		txtTotal.setBorder(mainborder);
+		panel.add(txtTotal);
+		
+		textField_10 = new JTextField();
+		textField_10.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) 
+			{
+				
+				submit.setFocusable(true);
+				submit.requestFocusInWindow();
+			}
+		});
+		
+		textField_10.setColumns(10);
+		textField_10.setBounds(382, 152, 77, 20);
+		textField_10.setBorder(mainborder);
+		panel.add(textField_10);
 	}
 }
