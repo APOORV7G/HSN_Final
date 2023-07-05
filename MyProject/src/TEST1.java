@@ -1,176 +1,115 @@
-import org.apache.poi.ss.usermodel.*;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.Stack;
 
-public class TEST1 extends JFrame {
-    private JTextField textField;
-    private JTextField textField_1;
-    private JTextField textField_2;
-    private JTextField textField_3;
-    private JTextField textField_4;
-    private JTextField textField_5;
-    private JTextField textField_6;
-    private JTextField textField_7;
-    private JTextField textField_8;
-    private JTextField textField_9;
-
+@SuppressWarnings("serial")
+public class TEST1 extends JFrame implements ActionListener {
+    private JTextField inputField;
+    private JTextField outputField;
     private JButton submitButton;
 
-    private Workbook workbook;
-    private Sheet sheet;
-    private int rowIndex;
-
     public TEST1() {
-        initializeUI();
-
-        // Assuming you want to read data from the first sheet (index 0).
-        try (FileInputStream fis = new FileInputStream("temporary.xlsx")) {
-            workbook = WorkbookFactory.create(fis);
-            sheet = workbook.getSheetAt(0);
-            rowIndex = 0;
-
-            // Initialize the text fields with the first row values.
-            Row firstRow = sheet.getRow(0);
-            if (firstRow != null) {
-                textField.setText(getStringCellValue(firstRow, 0));
-                textField_1.setText(getStringCellValue(firstRow, 1));
-                textField_2.setText(getStringCellValue(firstRow, 2));
-                textField_3.setText(getStringCellValue(firstRow, 3));
-                textField_4.setText(getStringCellValue(firstRow, 4));
-                textField_5.setText(getStringCellValue(firstRow, 5));
-                textField_6.setText(getStringCellValue(firstRow, 6));
-                textField_7.setText(getStringCellValue(firstRow, 7));
-                textField_8.setText(getStringCellValue(firstRow, 8));
-                textField_9.setText(getStringCellValue(firstRow, 9));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initializeUI() {
-        setTitle("Excel Data Reader/Writer");
+        // Set up the frame
+        setTitle("Calculator");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new FlowLayout());
 
-        textField = new JTextField(20);
-        add(textField);
+        // Create the input text field
+        inputField = new JTextField(20);
+        add(inputField);
 
-        textField_1 = new JTextField(20);
-        add(textField_1);
+        // Create the output text field
+        outputField = new JTextField(20);
+        outputField.setEditable(false);
+        add(outputField);
 
-        textField_2 = new JTextField(20);
-        add(textField_2);
-
-        textField_3 = new JTextField(20);
-        add(textField_3);
-
-        textField_4 = new JTextField(20);
-        add(textField_4);
-
-        textField_5 = new JTextField(20);
-        add(textField_5);
-
-        textField_6 = new JTextField(20);
-        add(textField_6);
-
-        textField_7 = new JTextField(20);
-        add(textField_7);
-
-        textField_8 = new JTextField(20);
-        add(textField_8);
-
-        textField_9 = new JTextField(20);
-        add(textField_9);
-
+        // Create the submit button
         submitButton = new JButton("Submit");
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                writeValues();
-                readNextRow();
-            }
-        });
+        submitButton.addActionListener(this);
         add(submitButton);
 
         pack();
-        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
-    private String getStringCellValue(Row row, int columnIndex) {
-        Cell cell = row.getCell(columnIndex);
-        return (cell != null) ? cell.getStringCellValue() : "";
-    }
-
-    private void readNextRow() {
-        if (rowIndex < sheet.getLastRowNum() + 1) {
-            Row row = sheet.getRow(rowIndex);
-            if (row != null) {
-                textField.setText(getStringCellValue(row, 0));
-                textField_1.setText(getStringCellValue(row, 1));
-                textField_2.setText(getStringCellValue(row, 2));
-                textField_3.setText(getStringCellValue(row, 3));
-                textField_4.setText(getStringCellValue(row, 4));
-                textField_5.setText(getStringCellValue(row, 5));
-                textField_6.setText(getStringCellValue(row, 6));
-                textField_7.setText(getStringCellValue(row, 7));
-                textField_8.setText(getStringCellValue(row, 8));
-                textField_9.setText(getStringCellValue(row, 9));
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == submitButton) {
+            String input = inputField.getText();
+            if (input.isEmpty()) {
+                outputField.setText("Please enter a valid expression");
+            } else {
+                try {
+                    int result = evaluateExpression(input);
+                    inputField.setText(String.valueOf(result));
+                } catch (NumberFormatException ex) {
+                	inputField.setText("Invalid input");
+                } catch (IllegalArgumentException ex) {
+                	inputField.setText("Invalid expression: " + ex.getMessage());
+                }
             }
-
-            rowIndex++;
-        } else {
-            clearAllTextFields();
         }
     }
 
-    private void clearAllTextFields() {
-        textField.setText("");
-        textField_1.setText("");
-        textField_2.setText("");
-        textField_3.setText("");
-        textField_4.setText("");
-        textField_5.setText("");
-        textField_6.setText("");
-        textField_7.setText("");
-        textField_8.setText("");
-        textField_9.setText("");
+    private int evaluateExpression(String expression) {
+        expression = expression.replace(" ", ""); // Remove spaces
+
+        Stack<Integer> numStack = new Stack<>();
+        Stack<Character> opStack = new Stack<>();
+
+        int i = 0;
+        while (i < expression.length()) {
+            char currentChar = expression.charAt(i);
+            if (Character.isDigit(currentChar)) {
+                StringBuilder numBuilder = new StringBuilder();
+                while (i < expression.length() && Character.isDigit(expression.charAt(i))) {
+                    numBuilder.append(expression.charAt(i));
+                    i++;
+                }
+                int num = Integer.parseInt(numBuilder.toString());
+                numStack.push(num);
+            } else if (currentChar == '+' || currentChar == '*') {
+                while (!opStack.isEmpty() && hasPrecedence(currentChar, opStack.peek())) {
+                    performOperation(numStack, opStack);
+                }
+                opStack.push(currentChar);
+                i++;
+            } else {
+                throw new IllegalArgumentException("Invalid character: " + currentChar);
+            }
+        }
+
+        while (!opStack.isEmpty()) {
+            performOperation(numStack, opStack);
+        }
+
+        return numStack.pop();
     }
 
-    private void writeValues() {
-        Row row = sheet.createRow(rowIndex);
+    private boolean hasPrecedence(char op1, char op2) {
+        return (op2 == '*') || (op1 == '+' && op2 == '+');
+    }
 
-        row.createCell(0).setCellValue(textField.getText());
-        row.createCell(1).setCellValue(textField_1.getText());
-        row.createCell(2).setCellValue(textField_2.getText());
-        row.createCell(3).setCellValue(textField_3.getText());
-        row.createCell(4).setCellValue(textField_4.getText());
-        row.createCell(5).setCellValue(textField_5.getText());
-        row.createCell(6).setCellValue(textField_6.getText());
-        row.createCell(7).setCellValue(textField_7.getText());
-        row.createCell(8).setCellValue(textField_8.getText());
-        row.createCell(9).setCellValue(textField_9.getText());
+    private void performOperation(Stack<Integer> numStack, Stack<Character> opStack) {
+        int num2 = numStack.pop();
+        int num1 = numStack.pop();
+        char operator = opStack.pop();
 
-        clearAllTextFields();
-
-        try (FileOutputStream fos = new FileOutputStream("temporary.xlsx")) {
-            workbook.write(fos);
-        } catch (IOException e) {
-            e.printStackTrace();
+        int result = 0;
+        if (operator == '+') {
+            result = num1 + num2;
+        } else if (operator == '*') {
+            result = num1 * num2;
         }
+        numStack.push(result);
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
-            @Override
             public void run() {
-                new TEST1().setVisible(true);
+                new TEST1();
             }
         });
     }
