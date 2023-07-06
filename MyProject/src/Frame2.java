@@ -116,7 +116,7 @@ public class Frame2 extends JFrame {
 				if(e.getSource()==submit) 
 				{
 					
-						if(textField_To.getText().trim().isEmpty() || textField_From.getText().trim().isEmpty() ||textField_To.getText().contentEquals(textField_From.getText())
+						if(textField_To.getText().trim().isEmpty() || textField_From.getText().trim().isEmpty() //||textField_To.getText().contentEquals(textField_From.getText())
 								)
 						{  
 							System.out.println("Invalid name");

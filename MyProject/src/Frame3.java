@@ -19,7 +19,9 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -623,8 +625,16 @@ public class Frame3 {
 		        row.createCell(8).setCellValue(Integer.parseInt(textField_7.getText()));
 		        row.createCell(9).setCellValue(Integer.parseInt(textField_8.getText()));
 		        row.createCell(10).setCellValue(Integer.parseInt(textField_9.getText()));
-		        row.createCell(11).setCellValue(Integer.parseInt(textField_10.getText()));		        
+		        row.createCell(11).setCellValue(Integer.parseInt(textField_10.getText()));
 		        
+		        CellStyle borderedCellStyle = workbook.createCellStyle();
+                borderedCellStyle.setBorderTop(BorderStyle.THIN);
+                borderedCellStyle.setBorderBottom(BorderStyle.THIN);
+                borderedCellStyle.setBorderLeft(BorderStyle.THIN);
+                borderedCellStyle.setBorderRight(BorderStyle.THIN);
+                for (int i = 0; i <= 11; i++) {
+                    row.getCell(i).setCellStyle(borderedCellStyle);
+                }
 
 		        
 		        try 
