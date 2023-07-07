@@ -25,6 +25,7 @@ public class Frame4 {
 	Sheet sheet;
 	Workbook workbook;
 	Row EmptyRow , newRow,total,cgst,sgst ;
+	int i,j;
 	
 	
 	/**
@@ -64,6 +65,11 @@ public class Frame4 {
 		
 		
         int colNums[] = {1,2,3,4,5,6,7,8,9,10,11}; // Row number (starting from 0)
+        char[] chars = new char[colNums.length];
+        for (int i = 0; i < colNums.length; i++) {
+            chars[i] = (char) (colNums[i] + 65);
+        }
+
         int[] firstCellNum_1=new int[11];
         int[] lastCellNum_1=new int[11];
         try 
@@ -98,8 +104,10 @@ public class Frame4 {
                                             if (firstCellNum == -1) 
                                             {
                                                 firstCellNum = rowNum;
+                                                firstCellNum++;
                                             }
                                             lastCellNum = rowNum;
+                                            lastCellNum++;
                                         }
                                     }
                                 }
@@ -136,10 +144,15 @@ public class Frame4 {
                 borderedCellStyle.setBorderBottom(BorderStyle.THIN);
                 borderedCellStyle.setBorderLeft(BorderStyle.THIN);
                 borderedCellStyle.setBorderRight(BorderStyle.THIN);
+                CellStyle plaincell=workbook.createCellStyle();
+                plaincell.setBorderTop(BorderStyle.THIN);
+                plaincell.setBorderBottom(BorderStyle.THIN); 
+                plaincell.setBorderLeft(BorderStyle.THIN);
+                plaincell.setBorderRight(BorderStyle.THIN);
 
                 Cell[] cells = new Cell[12];
                 String[] cellValues = {" ", "8532 nos", "8532 amt", "8533 nos", "8533 amt",
-                        "8536 nos", "8535 amt", "8541 nos", "8541 amt", "8542 nos", "8542 amt", "Total"};
+                        "8536 nos", "8536 amt", "8541 nos", "8541 amt", "8542 nos", "8542 amt", "Total"};
 
                 for (int i = 0; i < cellValues.length; i++) 
                 {
@@ -153,6 +166,38 @@ public class Frame4 {
                 cgst=sheet.createRow(newRowIndex+3); 	cgst.createCell(0).setCellValue("CGST");	cgst.getCell(0).setCellStyle(borderedCellStyle);
                 sgst=sheet.createRow(newRowIndex+4);	sgst.createCell(0).setCellValue("SGST");	sgst.getCell(0).setCellStyle(borderedCellStyle);
                 
+               for( i=1;i<=11;i++)
+               {
+            	   String formula="SUM("+chars[i-1]+firstCellNum_1[i-1]+":"+chars[i-1]+lastCellNum_1[i-1]+")-SumYellowCells("+chars[i-1]+firstCellNum_1[i-1]+":"+chars[i-1]+lastCellNum_1[i-1]+")";
+            	   
+            	   Cell cell=total.createCell(i);
+            	   cell.setCellFormula(formula);
+            	   cell.setCellStyle(plaincell);
+            	   
+            	   
+            	   
+               }
+               for( i=2,j=2;i<12&&j<12;i+=2,j+=2) 
+               {
+            	   String formula="(SUM("+chars[j-1]+firstCellNum_1[j-1]+":"+chars[j-1]+lastCellNum_1[j-1]+")-SumYellowCells("+chars[j-1]+firstCellNum_1[j-1]+":"+chars[j-1]+lastCellNum_1[j-1]+"))*0.09";
+            	   Cell cell2=cgst.createCell(i);
+            	   cell2.setCellFormula(formula);
+            	   cell2.setCellStyle(plaincell);
+            	   
+            	   Cell cell3=sgst.createCell(i);
+            	   cell3.setCellFormula(formula);
+            	   cell3.setCellStyle(plaincell);
+            	  
+            	   
+               }
+               String formula="(SUM("+chars[j-2]+firstCellNum_1[j-2]+":"+chars[j-2]+lastCellNum_1[j-2]+")-SumYellowCells("+chars[j-2]+firstCellNum_1[j-2]+":"+chars[j-2]+lastCellNum_1[j-2]+"))*0.09";
+               Cell cell4=cgst.createCell(i-1);
+               cell4.setCellFormula(formula);
+               cell4.setCellStyle(plaincell);
+               Cell cell5=sgst.createCell(i-1);
+               cell5.setCellFormula(formula);
+               cell5.setCellStyle(plaincell);
+        	  
                 
                 try 
         		{
