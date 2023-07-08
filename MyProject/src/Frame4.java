@@ -17,6 +17,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import javax.swing.JTextArea;
+import java.awt.FlowLayout;
 
 public class Frame4 {
 
@@ -24,7 +26,7 @@ public class Frame4 {
 	String sheetName = "Data";
 	Sheet sheet;
 	Workbook workbook;
-	Row EmptyRow , newRow,total,cgst,sgst ;
+	Row EmptyRow , newRow,total,cgst,sgst,igsttotal,igst ;
 	int i,j;
 	
 	
@@ -60,8 +62,13 @@ public class Frame4 {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.getContentPane().setBackground(new Color(255, 255, 255));
+		frame.getContentPane().setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		frame.setResizable(false);
-		frame.getContentPane().setLayout(null);
+		
+		JTextArea txtrYourFileIs = new JTextArea();
+		txtrYourFileIs.setText("Your file is ready. Thank You");
+		txtrYourFileIs.setEditable(false);
+		frame.getContentPane().add(txtrYourFileIs);
 		
 		
         int colNums[] = {1,2,3,4,5,6,7,8,9,10,11}; // Row number (starting from 0)
@@ -162,10 +169,11 @@ public class Frame4 {
                     cells[i].setCellStyle( borderedCellStyle);
                     
                 }
-                total=sheet.createRow(newRowIndex+2);	total.createCell(0).setCellValue("TOTAL");  total.getCell(0).setCellStyle(borderedCellStyle);
-                cgst=sheet.createRow(newRowIndex+3); 	cgst.createCell(0).setCellValue("CGST");	cgst.getCell(0).setCellStyle(borderedCellStyle);
-                sgst=sheet.createRow(newRowIndex+4);	sgst.createCell(0).setCellValue("SGST");	sgst.getCell(0).setCellStyle(borderedCellStyle);
-                
+                total=sheet.createRow(newRowIndex+2);		total.createCell(0).setCellValue("TOTAL");  		total.getCell(0).setCellStyle(borderedCellStyle);
+                cgst=sheet.createRow(newRowIndex+3); 		cgst.createCell(0).setCellValue("CGST");			cgst.getCell(0).setCellStyle(borderedCellStyle);
+                sgst=sheet.createRow(newRowIndex+4);		sgst.createCell(0).setCellValue("SGST");			sgst.getCell(0).setCellStyle(borderedCellStyle);
+                igsttotal=sheet.createRow(newRowIndex+5);	igsttotal.createCell(0).setCellValue("IGST-TOTAl");	igsttotal.getCell(0).setCellStyle(borderedCellStyle);
+                igst=sheet.createRow(newRowIndex+6);		igst.createCell(0).setCellValue("IGST");	   		igst.getCell(0).setCellStyle(borderedCellStyle);
                for( i=1;i<=11;i++)
                {
             	   String formula="SUM("+chars[i-1]+firstCellNum_1[i-1]+":"+chars[i-1]+lastCellNum_1[i-1]+")-SumYellowCells("+chars[i-1]+firstCellNum_1[i-1]+":"+chars[i-1]+lastCellNum_1[i-1]+")";
@@ -174,29 +182,63 @@ public class Frame4 {
             	   cell.setCellFormula(formula);
             	   cell.setCellStyle(plaincell);
             	   
+            	   String formula2="SumYellowCells("+chars[i-1]+firstCellNum_1[i-1]+":"+chars[i-1]+lastCellNum_1[i-1]+")";
+            	  
+            	   Cell cell2=igsttotal.createCell(i);
+            	   cell2.setCellFormula(formula2);
+            	   cell2.setCellStyle(plaincell);
+            	   
             	   
             	   
                }
                for( i=2,j=2;i<12&&j<12;i+=2,j+=2) 
                {
             	   String formula="(SUM("+chars[j-1]+firstCellNum_1[j-1]+":"+chars[j-1]+lastCellNum_1[j-1]+")-SumYellowCells("+chars[j-1]+firstCellNum_1[j-1]+":"+chars[j-1]+lastCellNum_1[j-1]+"))*0.09";
-            	   Cell cell2=cgst.createCell(i);
-            	   cell2.setCellFormula(formula);
-            	   cell2.setCellStyle(plaincell);
-            	   
-            	   Cell cell3=sgst.createCell(i);
+            	   Cell cell3=cgst.createCell(i);
             	   cell3.setCellFormula(formula);
             	   cell3.setCellStyle(plaincell);
+            	   
+            	   Cell cell4=sgst.createCell(i);
+            	   cell4.setCellFormula(formula);
+            	   cell4.setCellStyle(plaincell);
+            	   
+            	   String formula2="(SumYellowCells("+chars[i-1]+firstCellNum_1[i-1]+":"+chars[i-1]+lastCellNum_1[i-1]+"))*0.18";
+            	   Cell cell5=igst.createCell(i);
+            	   cell5.setCellFormula(formula2);
+            	   cell5.setCellStyle(plaincell);
+            	   
             	  
             	   
                }
                String formula="(SUM("+chars[j-2]+firstCellNum_1[j-2]+":"+chars[j-2]+lastCellNum_1[j-2]+")-SumYellowCells("+chars[j-2]+firstCellNum_1[j-2]+":"+chars[j-2]+lastCellNum_1[j-2]+"))*0.09";
-               Cell cell4=cgst.createCell(i-1);
-               cell4.setCellFormula(formula);
-               cell4.setCellStyle(plaincell);
-               Cell cell5=sgst.createCell(i-1);
-               cell5.setCellFormula(formula);
-               cell5.setCellStyle(plaincell);
+               Cell cell6=cgst.createCell(i-1);
+               cell6.setCellFormula(formula);
+               cell6.setCellStyle(plaincell);
+               Cell cell7=sgst.createCell(i-1);
+               cell7.setCellFormula(formula);
+               cell7.setCellStyle(plaincell);
+               
+               String formula2="(SumYellowCells("+chars[j-2]+firstCellNum_1[j-2]+":"+chars[j-2]+lastCellNum_1[j-2]+"))*0.18";
+        	   Cell cell8=igst.createCell(i-1);
+        	   cell8.setCellFormula(formula2);
+        	   cell8.setCellStyle(plaincell);
+               
+        	   int columnToAutoSize = 0;
+        	   int lastRowIndex2 = sheet.getLastRowNum();
+        	   for (int i = 0; i <= lastRowIndex2; i++) 
+        	   {
+        	       Row row = sheet.getRow(i);
+        	       if (row != null) 
+        	       {
+        	           Cell cell = row.getCell(columnToAutoSize);
+        	           if (cell != null)
+        	           {
+        	               sheet.autoSizeColumn(columnToAutoSize); // Auto-size the column
+        	           }
+        	       }
+        	   }
+               
+               
         	  
                 
                 try 
@@ -220,7 +262,6 @@ public class Frame4 {
 		{
             System.out.println("An error occurred while reading the file: " + e1.getMessage());
         }
-         
+         frame.pack();
 	}
-
 }

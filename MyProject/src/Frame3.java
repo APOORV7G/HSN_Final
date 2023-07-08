@@ -23,10 +23,13 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import javax.swing.JRadioButton;
 
 public class Frame3 {
 
@@ -59,7 +62,8 @@ public class Frame3 {
 	private JTextField textField_10;
 	private Sheet sheet;
 	private int rowIndex;
-	 private Workbook workbook;
+	private Workbook workbook;
+	private JRadioButton igst;
 	
 
 	
@@ -603,16 +607,27 @@ public class Frame3 {
 			{
 				 if (e.getKeyCode() == KeyEvent.VK_ENTER)
 				 {
-					 writeValue();
+					
+					 if(igst.isSelected()) 
+					 {
+						 
+					     yellowwriteValue();
+					     igst.setSelected(false);
+					 }
+					 else
+					 {
+						 writeValue();
+					 }
 					 readNextValue();
+					 
 				
 				
 				textField.setFocusable(true);
 				textField.requestFocusInWindow();
 				 }
 			}
-			private void writeValue() {
-				
+			private void yellowwriteValue() 
+			{
 				Row row = sheet.createRow(rowIndex);
 				row.createCell(0).setCellValue(Integer.parseInt(invoice_1.getText()));
 		        row.createCell(1).setCellValue(Integer.parseInt(textField.getText()));
@@ -632,8 +647,70 @@ public class Frame3 {
                 borderedCellStyle.setBorderBottom(BorderStyle.THIN);
                 borderedCellStyle.setBorderLeft(BorderStyle.THIN);
                 borderedCellStyle.setBorderRight(BorderStyle.THIN);
-                for (int i = 0; i <= 11; i++) {
+                
+                borderedCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                borderedCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                for (int i = 0; i <= 11; i++) 
+                {
                     row.getCell(i).setCellStyle(borderedCellStyle);
+                }
+
+		        
+		        try 
+				{
+		            BufferedReader reader = new BufferedReader(new FileReader("temporary.txt"));
+		            String line;
+		            
+		            line = reader.readLine();
+		            reader.close();
+		                
+		                {
+		                	
+		                		
+		                		try (FileOutputStream fos = new FileOutputStream(line)) 
+		                		{
+		                            workbook.write(fos);
+		                            fos.close();
+		                            System.out.println("File writeen");
+		                        } catch (IOException e) 
+		                		{
+		                            e.printStackTrace();
+		                        }
+		                   
+			                
+		                }
+				}
+				catch (IOException e1) 
+				{
+		            System.out.println("An error occurred while reading the file: " + e1.getMessage());
+		        }
+		        clearAllTextFields();
+			}
+				
+			
+			private void writeValue() {
+				
+				Row row = sheet.createRow(rowIndex);
+				row.createCell(0).setCellValue(Integer.parseInt(invoice_1.getText()));
+		        row.createCell(1).setCellValue(Integer.parseInt(textField.getText()));
+		        row.createCell(2).setCellValue(Integer.parseInt(textField_1.getText()));
+		        row.createCell(3).setCellValue(Integer.parseInt(textField_2.getText()));
+		        row.createCell(4).setCellValue(Integer.parseInt(textField_3.getText()));
+		        row.createCell(5).setCellValue(Integer.parseInt(textField_4.getText()));
+		        row.createCell(6).setCellValue(Integer.parseInt(textField_5.getText()));
+		        row.createCell(7).setCellValue(Integer.parseInt(textField_6.getText()));
+		        row.createCell(8).setCellValue(Integer.parseInt(textField_7.getText()));
+		        row.createCell(9).setCellValue(Integer.parseInt(textField_8.getText()));
+		        row.createCell(10).setCellValue(Integer.parseInt(textField_9.getText()));
+		        row.createCell(11).setCellValue(Integer.parseInt(textField_10.getText()));
+		        
+		        CellStyle borderedCellStyle2 = workbook.createCellStyle();
+                borderedCellStyle2.setBorderTop(BorderStyle.THIN);
+                borderedCellStyle2.setBorderBottom(BorderStyle.THIN);
+                borderedCellStyle2.setBorderLeft(BorderStyle.THIN);
+                borderedCellStyle2.setBorderRight(BorderStyle.THIN);
+                for (int i = 0; i <= 11; i++) {
+                    row.getCell(i).setCellStyle(borderedCellStyle2);
                 }
 
 		        
@@ -855,5 +932,10 @@ public class Frame3 {
 		textField_10.setBounds(382, 152, 77, 20);
 		textField_10.setBorder(mainborder);
 		panel.add(textField_10);
+		
+		igst = new JRadioButton("IGST");
+		igst.setBounds(294, 91, 109, 23);
+		
+		panel.add(igst);
 	}
 }
