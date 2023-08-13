@@ -129,63 +129,80 @@ public class Frame3 {
             System.out.println("An error occurred while reading the file: " + e1.getMessage());
         }
 	}
-	private int evaluateExpression(String expression) {
-        expression = expression.replace(" ", ""); // Remove spaces
-
-        Stack<Integer> numStack = new Stack<>();
-        Stack<Character> opStack = new Stack<>();
-
-        int i = 0;
-        while (i < expression.length()) {
-            char currentChar = expression.charAt(i);
-            if (Character.isDigit(currentChar)) {
-                StringBuilder numBuilder = new StringBuilder();
-                while (i < expression.length() && Character.isDigit(expression.charAt(i))) {
-                    numBuilder.append(expression.charAt(i));
-                    i++;
-                }
-                int num = Integer.parseInt(numBuilder.toString());
-                numStack.push(num);
-            } else if (currentChar == '+' || currentChar == '*') {
-                while (!opStack.isEmpty() && hasPrecedence(currentChar, opStack.peek())) {
-                    performOperation(numStack, opStack);
-                }
-                opStack.push(currentChar);
-                i++;
-            } else {
-                throw new IllegalArgumentException("Invalid character: " + currentChar);
-            }
-        }
-
-        while (!opStack.isEmpty()) {
-            performOperation(numStack, opStack);
-        }
-
-        return numStack.pop();
-    }
-
-    private boolean hasPrecedence(char op1, char op2) {
-        return (op2 == '*') || (op1 == '+' && op2 == '+');
-    }
-
-    private void performOperation(Stack<Integer> numStack, Stack<Character> opStack) {
-        int num2 = numStack.pop();
-        int num1 = numStack.pop();
-        char operator = opStack.pop();
-
-        int result = 0;
-        if (operator == '+') {
-            result = num1 + num2;
-        } else if (operator == '*') {
-            result = num1 * num2;
-        }
-        numStack.push(result);
-    }
 	
+
+	    public double evaluateExpression(String expression) {
+	        expression = expression.replace(" ", ""); // Remove spaces
+
+	        Stack<Double> numStack = new Stack<>();
+	        Stack<Character> opStack = new Stack<>();
+	        numStack.push((double) 0);
+	        int i = 0;
+	        while (i < expression.length()) {
+	            char currentChar = expression.charAt(i);
+	            if (Character.isDigit(currentChar) || currentChar == '.') {
+	                StringBuilder numBuilder = new StringBuilder();
+	                while (i < expression.length() &&
+	                       (Character.isDigit(expression.charAt(i)) || expression.charAt(i) == '.')) {
+	                    numBuilder.append(expression.charAt(i));
+	                    i++;
+	                }
+	                double num = Double.parseDouble(numBuilder.toString());
+	                numStack.push(num);
+	            } else if (currentChar == '+' || currentChar == '*') {
+	                while (!opStack.isEmpty() && hasPrecedence(currentChar, opStack.peek())) {
+	                    performOperation(numStack, opStack);
+	                }
+	                opStack.push(currentChar);
+	                i++;
+	            } else {
+	                throw new IllegalArgumentException("Invalid character: " + currentChar);
+	            }
+	        }
+
+	        while (!opStack.isEmpty()) {
+	            performOperation(numStack, opStack);
+	        }
+
+	        return numStack.pop();
+	    }
+
+	    private boolean hasPrecedence(char op1, char op2) {
+	        return (op2 == '*') || (op1 == '+' && op2 == '+');
+	    }
+
+	    private void performOperation(Stack<Double> numStack, Stack<Character> opStack) {
+	        double num2 = numStack.pop();
+	        double num1 = numStack.pop();
+	        char operator = opStack.pop();
+
+	        double result = 0;
+	        if (operator == '+') {
+	            result = num1 + num2;
+	        } else if (operator == '*') {
+	            result = num1 * num2;
+	        }
+	        numStack.push(result);
+	    } 
+	    private String processInput(String input) {
+	        try {
+	            double value = Double.parseDouble(input);
+	            int integerValue = (int) value;
+
+	            if (value == integerValue) {
+	                return String.valueOf(integerValue);
+	            }
+	        } catch (NumberFormatException ignored) {
+	            // Ignore non-integer input
+	        }
+	        return input;
+	    }
+
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	
 	private void initialize() {
 		
 		frame = new JFrame("HSN");
@@ -293,6 +310,7 @@ public class Frame3 {
 		txtInvoice.setColumns(10);
 		
 		textField = new JTextField();
+		textField.setText("0");
 		textField.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -303,15 +321,18 @@ public class Frame3 {
 					 temp=textField.getText();
 					 System.out.println(temp);
 					 try {
-		                    int result = evaluateExpression(temp);
+		                    double result = evaluateExpression(temp);
+		                    
 		                    textField.setText(String.valueOf(result));
+		                    
 		                } catch (NumberFormatException ex) {
 		                	textField.setText("Invalid input");
 		                } catch (IllegalArgumentException ex) {
 		                	textField.setText("Invalid expression: " + ex.getMessage());
 		                }
 					 temp=textField.getText();
-					 
+					 textField.setText(processInput(temp));
+					 temp=textField.getText();
 					 textField_1.setFocusable(true);
 					 textField_1.requestFocusInWindow();
 				 }
@@ -327,6 +348,7 @@ public class Frame3 {
 		textField.setColumns(10);
 		
 		textField_1 = new JTextField();
+		textField_1.setText("0");
 		textField_1.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -337,13 +359,15 @@ public class Frame3 {
 					 temp1=textField_1.getText();
 					 System.out.println(temp1);
 					 try {
-		                    int result = evaluateExpression(temp1);
+		                    double result = evaluateExpression(temp1);
 		                    textField_1.setText(String.valueOf(result));
 		                } catch (NumberFormatException ex) {
 		                	textField_1.setText("Invalid input");
 		                } catch (IllegalArgumentException ex) {
 		                	textField_1.setText("Invalid expression: " + ex.getMessage());
 		                }
+					 temp1=textField_1.getText();
+					 textField_1.setText(processInput(temp1));
 					 temp1=textField_1.getText();
 					 textField_2.setFocusable(true);
 					 textField_2.requestFocusInWindow();
@@ -359,6 +383,7 @@ public class Frame3 {
 		panel.add(textField_1);
 		
 		textField_2 = new JTextField();
+		textField_2.setText("0");
 		textField_2.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -368,10 +393,9 @@ public class Frame3 {
 				 {
 					 temp2=textField_2.getText();
 					 System.out.println(temp2);
-					 textField_3.setFocusable(true);
-					 textField_3.requestFocusInWindow();
+					 
 					 try {
-		                    int result = evaluateExpression(temp2);
+		                    double result = evaluateExpression(temp2);
 		                    textField_2.setText(String.valueOf(result));
 		                } catch (NumberFormatException ex) {
 		                	textField_2.setText("Invalid input");
@@ -379,6 +403,10 @@ public class Frame3 {
 		                	textField_2.setText("Invalid expression: " + ex.getMessage());
 		                }
 					 temp2=textField_2.getText();
+					 textField_2.setText(processInput(temp2));
+					 temp2=textField_2.getText();
+					 textField_3.setFocusable(true);
+					 textField_3.requestFocusInWindow();
 				 }
 			}
 		});
@@ -388,6 +416,7 @@ public class Frame3 {
 		panel.add(textField_2);
 		
 		textField_3 = new JTextField();
+		textField_3.setText("0");
 		textField_3.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -398,13 +427,15 @@ public class Frame3 {
 					  temp3=textField_3.getText();
 					 System.out.println(temp3);
 					 try {
-		                    int result = evaluateExpression(temp3);
+		                    double result = evaluateExpression(temp3);
 		                    textField_3.setText(String.valueOf(result));
 		                } catch (NumberFormatException ex) {
 		                	textField_3.setText("Invalid input");
 		                } catch (IllegalArgumentException ex) {
 		                	textField_3.setText("Invalid expression: " + ex.getMessage());
 		                }
+					 temp3=textField_3.getText();
+					 textField_3.setText(processInput(temp3));
 					 temp3=textField_3.getText();
 					 textField_4.setFocusable(true);
 					 textField_4.requestFocusInWindow();
@@ -417,6 +448,7 @@ public class Frame3 {
 		panel.add(textField_3);
 		
 		textField_4 = new JTextField();
+		textField_4.setText("0");
 		textField_4.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -427,13 +459,15 @@ public class Frame3 {
 					 temp4=textField_4.getText();
 					 System.out.println(temp4);
 					 try {
-		                    int result = evaluateExpression(temp4);
+		                    double result = evaluateExpression(temp4);
 		                    textField_4.setText(String.valueOf(result));
 		                } catch (NumberFormatException ex) {
 		                	textField_4.setText("Invalid input");
 		                } catch (IllegalArgumentException ex) {
 		                	textField_4.setText("Invalid expression: " + ex.getMessage());
 		                }
+					 temp4=textField_4.getText();
+					 textField_4.setText(processInput(temp4));
 					 temp4=textField_4.getText();
 					 textField_5.setFocusable(true);
 					 textField_5.requestFocusInWindow();
@@ -446,6 +480,7 @@ public class Frame3 {
 		panel.add(textField_4);
 		
 		textField_5 = new JTextField();
+		textField_5.setText("0");
 		textField_5.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -456,13 +491,15 @@ public class Frame3 {
 					 temp5=textField_5.getText();
 					 System.out.println(temp5);
 					 try {
-		                    int result = evaluateExpression(temp5);
+		                    double result = evaluateExpression(temp5);
 		                    textField_5.setText(String.valueOf(result));
 		                } catch (NumberFormatException ex) {
 		                	textField_5.setText("Invalid input");
 		                } catch (IllegalArgumentException ex) {
 		                	textField_5.setText("Invalid expression: " + ex.getMessage());
 		                }
+					 temp5=textField_5.getText();
+					 textField_5.setText(processInput(temp5));
 					 temp5=textField_5.getText();
 					 textField_6.setFocusable(true);
 					 textField_6.requestFocusInWindow();
@@ -475,6 +512,7 @@ public class Frame3 {
 		panel.add(textField_5);
 		
 		textField_6 = new JTextField();
+		textField_6.setText("0");
 		textField_6.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -485,13 +523,15 @@ public class Frame3 {
 					 temp6=textField_6.getText();
 					 System.out.println(temp6);
 					 try {
-		                    int result = evaluateExpression(temp6);
+		                    double result = evaluateExpression(temp6);
 		                    textField_6.setText(String.valueOf(result));
 		                } catch (NumberFormatException ex) {
 		                	textField_6.setText("Invalid input");
 		                } catch (IllegalArgumentException ex) {
 		                	textField_6.setText("Invalid expression: " + ex.getMessage());
 		                }
+					 temp6=textField_6.getText();
+					 textField_6.setText(processInput(temp6));
 					 temp6=textField_6.getText();
 					 textField_7.setFocusable(true);
 					 textField_7.requestFocusInWindow();
@@ -504,6 +544,7 @@ public class Frame3 {
 		panel.add(textField_6);
 		
 		textField_7 = new JTextField();
+		textField_7.setText("0");
 		textField_7.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -514,13 +555,15 @@ public class Frame3 {
 					 temp7=textField_7.getText();
 					 System.out.println(temp7);
 					 try {
-		                    int result = evaluateExpression(temp7);
+		                    double result = evaluateExpression(temp7);
 		                    textField_7.setText(String.valueOf(result));
 		                } catch (NumberFormatException ex) {
 		                	textField_7.setText("Invalid input");
 		                } catch (IllegalArgumentException ex) {
 		                	textField_7.setText("Invalid expression: " + ex.getMessage());
 		                }
+					 temp7=textField_7.getText();
+					 textField_7.setText(processInput(temp7));
 					 temp7=textField_7.getText();
 					 textField_8.setFocusable(true);
 					 textField_8.requestFocusInWindow();
@@ -533,6 +576,7 @@ public class Frame3 {
 		panel.add(textField_7);
 		
 		textField_8 = new JTextField();
+		textField_8.setText("0");
 		textField_8.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -543,13 +587,15 @@ public class Frame3 {
 					 temp8=textField_8.getText();
 					 System.out.println(temp8);
 					 try {
-		                    int result = evaluateExpression(temp8);
+		                    double result = evaluateExpression(temp8);
 		                    textField_8.setText(String.valueOf(result));
 		                } catch (NumberFormatException ex) {
 		                	textField_8.setText("Invalid input");
 		                } catch (IllegalArgumentException ex) {
 		                	textField_8.setText("Invalid expression: " + ex.getMessage());
 		                }
+					 temp8=textField_8.getText();
+					 textField_8.setText(processInput(temp8));
 					 temp8=textField_8.getText();
 					 textField_9.setFocusable(true);
 					 textField_9.requestFocusInWindow();
@@ -562,6 +608,7 @@ public class Frame3 {
 		panel.add(textField_8);
 		
 		textField_9 = new JTextField();
+		textField_9.setText("0");
 		textField_9.addKeyListener(new KeyAdapter() 
 		{
 			@Override
@@ -572,13 +619,15 @@ public class Frame3 {
 					 temp9=textField_9.getText();
 					 System.out.println(temp9);
 					 try {
-		                    int result = evaluateExpression(temp9);
+		                    double result = evaluateExpression(temp9);
 		                    textField_9.setText(String.valueOf(result));
 		                } catch (NumberFormatException ex) {
 		                	textField_9.setText("Invalid input");
 		                } catch (IllegalArgumentException ex) {
 		                	textField_9.setText("Invalid expression: " + ex.getMessage());
 		                }
+					 temp9=textField_9.getText();
+					 textField_9.setText(processInput(temp9));
 					 temp9=textField_9.getText();
 					 textField_10.setFocusable(true);
 					 textField_10.requestFocusInWindow();
@@ -630,17 +679,17 @@ public class Frame3 {
 			{
 				Row row = sheet.createRow(rowIndex);
 				row.createCell(0).setCellValue(Integer.parseInt(invoice_1.getText()));
-		        row.createCell(1).setCellValue(Integer.parseInt(textField.getText()));
-		        row.createCell(2).setCellValue(Integer.parseInt(textField_1.getText()));
-		        row.createCell(3).setCellValue(Integer.parseInt(textField_2.getText()));
-		        row.createCell(4).setCellValue(Integer.parseInt(textField_3.getText()));
-		        row.createCell(5).setCellValue(Integer.parseInt(textField_4.getText()));
-		        row.createCell(6).setCellValue(Integer.parseInt(textField_5.getText()));
-		        row.createCell(7).setCellValue(Integer.parseInt(textField_6.getText()));
-		        row.createCell(8).setCellValue(Integer.parseInt(textField_7.getText()));
-		        row.createCell(9).setCellValue(Integer.parseInt(textField_8.getText()));
-		        row.createCell(10).setCellValue(Integer.parseInt(textField_9.getText()));
-		        row.createCell(11).setCellValue(Integer.parseInt(textField_10.getText()));
+				row.createCell(1).setCellValue(processInput(textField.getText()));
+				row.createCell(2).setCellValue(processInput(textField_1.getText()));
+				row.createCell(3).setCellValue(processInput(textField_2.getText()));
+				row.createCell(4).setCellValue(processInput(textField_3.getText()));
+				row.createCell(5).setCellValue(processInput(textField_4.getText()));
+				row.createCell(6).setCellValue(processInput(textField_5.getText()));
+				row.createCell(7).setCellValue(processInput(textField_6.getText()));
+				row.createCell(8).setCellValue(processInput(textField_7.getText()));
+				row.createCell(9).setCellValue(processInput(textField_8.getText()));
+				row.createCell(10).setCellValue(processInput(textField_9.getText()));
+				row.createCell(11).setCellValue(processInput(textField_10.getText()));
 		        
 		        CellStyle borderedCellStyle = workbook.createCellStyle();
                 borderedCellStyle.setBorderTop(BorderStyle.THIN);
@@ -692,18 +741,17 @@ public class Frame3 {
 				
 				Row row = sheet.createRow(rowIndex);
 				row.createCell(0).setCellValue(Integer.parseInt(invoice_1.getText()));
-		        row.createCell(1).setCellValue(Integer.parseInt(textField.getText()));
-		        row.createCell(2).setCellValue(Integer.parseInt(textField_1.getText()));
-		        row.createCell(3).setCellValue(Integer.parseInt(textField_2.getText()));
-		        row.createCell(4).setCellValue(Integer.parseInt(textField_3.getText()));
-		        row.createCell(5).setCellValue(Integer.parseInt(textField_4.getText()));
-		        row.createCell(6).setCellValue(Integer.parseInt(textField_5.getText()));
-		        row.createCell(7).setCellValue(Integer.parseInt(textField_6.getText()));
-		        row.createCell(8).setCellValue(Integer.parseInt(textField_7.getText()));
-		        row.createCell(9).setCellValue(Integer.parseInt(textField_8.getText()));
-		        row.createCell(10).setCellValue(Integer.parseInt(textField_9.getText()));
-		        row.createCell(11).setCellValue(Integer.parseInt(textField_10.getText()));
-		        
+				row.createCell(1).setCellValue(processInput(textField.getText()));
+				row.createCell(2).setCellValue(processInput(textField_1.getText()));
+				row.createCell(3).setCellValue(processInput(textField_2.getText()));
+				row.createCell(4).setCellValue(processInput(textField_3.getText()));
+				row.createCell(5).setCellValue(processInput(textField_4.getText()));
+				row.createCell(6).setCellValue(processInput(textField_5.getText()));
+				row.createCell(7).setCellValue(processInput(textField_6.getText()));
+				row.createCell(8).setCellValue(processInput(textField_7.getText()));
+				row.createCell(9).setCellValue(processInput(textField_8.getText()));
+				row.createCell(10).setCellValue(processInput(textField_9.getText()));
+				row.createCell(11).setCellValue(processInput(textField_10.getText()));
 		        CellStyle borderedCellStyle2 = workbook.createCellStyle();
                 borderedCellStyle2.setBorderTop(BorderStyle.THIN);
                 borderedCellStyle2.setBorderBottom(BorderStyle.THIN);
@@ -748,16 +796,16 @@ public class Frame3 {
 			
 			private void clearAllTextFields() {
 				
-				textField.setText("");
-		        textField_1.setText("");
-		        textField_2.setText("");
-		        textField_3.setText("");
-		        textField_4.setText("");
-		        textField_5.setText("");
-		        textField_6.setText("");
-		        textField_7.setText("");
-		        textField_8.setText("");
-		        textField_9.setText("");
+				textField.setText("0");
+		        textField_1.setText("0");
+		        textField_2.setText("0");
+		        textField_3.setText("0");
+		        textField_4.setText("0");
+		        textField_5.setText("0");
+		        textField_6.setText("0");
+		        textField_7.setText("0");
+		        textField_8.setText("0");
+		        textField_9.setText("0");
 		        textField_10.setText("");
 				
 			}
@@ -786,7 +834,7 @@ public class Frame3 {
 		        {
 		            invoice_1.setText("No more values");
 		            frame.dispose();
-		            new Frame4();
+		           new Frame4();
 		        }
 				
 			}
@@ -921,8 +969,21 @@ public class Frame3 {
 			public void keyPressed(KeyEvent e) 
 			{
 				
-				int total=Integer.parseInt(temp1)+Integer.parseInt(temp3)+Integer.parseInt(temp5)+Integer.parseInt(temp7)+Integer.parseInt(temp9);
-				textField_10.setText(String.valueOf(total));
+				double total = 0.0;
+
+				if (temp1.contains(".") || temp3.contains(".") || temp5.contains(".") ||
+				    temp7.contains(".") || temp9.contains(".")) {
+				    total = Double.parseDouble(temp1) + Double.parseDouble(temp3) +
+				            Double.parseDouble(temp5) + Double.parseDouble(temp7) +
+				            Double.parseDouble(temp9);
+				} else {
+				    total = Integer.parseInt(temp1) + Integer.parseInt(temp3) +
+				            Integer.parseInt(temp5) + Integer.parseInt(temp7) +
+				            Integer.parseInt(temp9);
+				}
+				
+				textField_10.setText(processInput(String.valueOf(total)));
+				
 				submit.setFocusable(true);
 				submit.requestFocusInWindow();
 			}

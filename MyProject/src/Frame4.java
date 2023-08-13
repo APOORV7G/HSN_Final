@@ -17,6 +17,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import javax.swing.JTextArea;
 import java.awt.FlowLayout;
 
@@ -92,6 +94,37 @@ public class Frame4 {
                               
                 	 {		 workbook = WorkbookFactory.create(fis);
                            	sheet = workbook.getSheet(sheetName);
+                            try (FileInputStream fis1 = new FileInputStream(line);
+                                    Workbook workbook1 = new XSSFWorkbook(fis1)) {
+
+                                  
+                                   for (Row row : sheet) {
+                                       for (Cell cell : row) {
+                                    	   if (cell != null && cell.getCellType() == CellType.STRING) {
+                                               String cellValue = cell.getStringCellValue();
+                                               try {
+                                                   if (cellValue.contains(".")) {
+                                                       double numericValue = Double.parseDouble(cellValue);
+                                                       // Convert text cell to a double cell value
+                                                       cell.setCellValue(numericValue);
+                                                   } else {
+                                                       int numericValue = Integer.parseInt(cellValue);
+                                                       // Convert text cell to an integer cell value
+                                                       cell.setCellValue(numericValue);
+                                                   }
+                                               } catch (NumberFormatException ignored) {
+                                                   // Ignore non-numeric strings
+                                               }
+                                           }
+                                       }
+                                   }
+                                   try (FileOutputStream fos = new FileOutputStream("modifiedExcelFile.xlsx")) {
+                                       workbook.write(fos);
+                                   }
+
+                               } catch (IOException e) {
+                                   e.printStackTrace();
+                               }
 
                             int firstRowNum = sheet.getFirstRowNum();
                             int lastRowNum = sheet.getLastRowNum();
