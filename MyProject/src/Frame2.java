@@ -138,8 +138,7 @@ public class Frame2 extends JFrame {
 					                        Workbook workbook = new XSSFWorkbook(inputStream)) 
 					                {
 
-					                       @SuppressWarnings("unused")
-										Sheet sheet = workbook.getSheet("Data");
+					                       Sheet sheet = workbook.getSheet("Data");
 					                       
 										
 					                          /* 
